@@ -1,6 +1,6 @@
 import sys
 
-from aal_msgs.srv import OfflineAdaptation
+from aal_msgs.srv import AdaptArchitecture
 from aal_msgs.msg import Adaptation
 from lifecycle_msgs.msg import Transition
 import rclpy
@@ -18,10 +18,10 @@ class SwapPublishersClient(Node):
 
     def __init__(self):
         super().__init__('swap_publishers_client')
-        self.cli = self.create_client(OfflineAdaptation, '/offline_adaptation')
+        self.cli = self.create_client(AdaptArchitecture, '/adapt_architecture')
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
-        self.req = OfflineAdaptation.Request()
+        self.req = AdaptArchitecture.Request()
 
         
 

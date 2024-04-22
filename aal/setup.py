@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'adaptation_layer = aal.adaptation_manager_node:main',
+            'launch_service = aal.launch_as_a_service:main',
             'demo_publisherA = aal.demos.publisher_A:main',
             'demo_publisherB = aal.demos.publisher_B:main',
             'demo_subscriber = aal.demos.subscriber:main',

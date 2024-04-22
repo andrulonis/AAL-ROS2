@@ -1,6 +1,6 @@
 import sys
 
-from aal_msgs.srv import OfflineAdaptation
+from aal_msgs.srv import AdaptArchitecture
 from aal_msgs.msg import Adaptation
 from rcl_interfaces.msg import Parameter, ParameterValue
 from lifecycle_msgs.msg import Transition
@@ -17,22 +17,15 @@ ACTIVATE_TRANSITION.id = Transition.TRANSITION_ACTIVATE
 PUB_TOPIC_PARAM = rclpy.parameter.Parameter("publisher_topic_name",value=TOPIC_TO_CHANGE_TO).to_parameter_msg()
 SUB_TOPIC_PARAM = rclpy.parameter.Parameter("subscriber_topic_name",value=TOPIC_TO_CHANGE_TO).to_parameter_msg()
 
-# PUB_TOPIC_PARAM = Parameter()
-# PUB_TOPIC_PARAM.name = "publisher_topic_name"
-# PUB_TOPIC_PARAM.value = TOPIC_TO_CHANGE_TO
-
-# SUB_TOPIC_PARAM = Parameter()
-# SUB_TOPIC_PARAM.name = "subscriber_topic_name"
-# SUB_TOPIC_PARAM.value = TOPIC_TO_CHANGE_TO
 
 class ChangeTopicsClient(Node):
 
     def __init__(self):
         super().__init__('change_topics_client')
-        self.cli = self.create_client(OfflineAdaptation, '/offline_adaptation')
+        self.cli = self.create_client(AdaptArchitecture, '/adapt_architecture')
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
-        self.req = OfflineAdaptation.Request()
+        self.req = AdaptArchitecture.Request()
 
         
 

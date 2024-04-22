@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from aal_msgs.srv import OnlineAdaptation, OfflineAdaptation
+from aal_msgs.srv import AdaptArchitectureExternal, AdaptArchitecture
 from rcl_interfaces.msg import Parameter
 from std_msgs.msg import Float64
 from aal_msgs.msg import AdaptationState, Configuration, Adaptation
@@ -40,14 +40,13 @@ class AdaptationManager(Node):
 
     def __init__(self): 
         super().__init__('adaptation_manager')
-        self.publisher_ = self.create_publisher(AdaptationState, 'system_adaptation_state', 10)
 
         self.task_to_strategy_map = {}
         self.i = 0
         exclusive_group = MutuallyExclusiveCallbackGroup()
 
-        self.srv_online_adapt = self.create_service(OnlineAdaptation, '/online_adaptation',self.online_adaptation_requested)
-        self.srv_offline_adapt = self.create_service(OfflineAdaptation, '/offline_adaptation',self.offline_adaptation_requested)
+        self.srv_ext_adapt = self.create_service(AdaptArchitectureExternal, '/adapt_architecture_external',self.ext_adaptation_requested)
+        self.srv_adapt = self.create_service(AdaptArchitecture, '/adapt_architecture',self.adaptation_requested)
 
         self.reporting = [0,0]
 
@@ -57,27 +56,23 @@ class AdaptationManager(Node):
         self.get_state_client_dict = {}
         self.reporting_dict = {}
         
+    # def dynamic_bounding(self, utility, bounds):
+    #     lower_bound, upper_bound = bounds
 
 
+    #     if(utility > upper_bound): upper_bound = utility
 
 
-    def dynamic_bounding(self, utility, bounds):
-        lower_bound, upper_bound = bounds
+    #     elif(utility < lower_bound): lower_bound = utility
 
-
-        if(utility > upper_bound): upper_bound = utility
-
-
-        elif(utility < lower_bound): lower_bound = utility
-
-        new_range = upper_bound - lower_bound
+    #     new_range = upper_bound - lower_bound
 
         
-        result = float((utility - lower_bound)/new_range)
+    #     result = float((utility - lower_bound)/new_range)
 
-        bounds[0:2] = [lower_bound,upper_bound]
+    #     bounds[0:2] = [lower_bound,upper_bound]
 
-        return result
+    #     return result
 
 
     def make_configurations(self, adaptation_options_list):
@@ -137,6 +132,11 @@ class AdaptationManager(Node):
 
 
     def execute_rp_adaptation(self, param_msg, node_name):
+        if((param_msg is None) or (node_name is None)):
+                self.get_logger().error("Unknown or unspecified type of adaptation")
+                response.success = False
+                return response
+        
         if node_name not in self.set_parameter_client_dict: 
             self.create_set_param_client(node_name)  
 
@@ -168,7 +168,11 @@ class AdaptationManager(Node):
     def execute_lc_adaptation(self, transition, node_name):
         self.get_logger().info("\n\n\ LC adaptation \n\n\n\n\n")
 
-        
+        if((transition is None) or (node_name is None)):
+                self.get_logger().error("Unknown or unspecified type of adaptation")
+                response.success = False
+                return response
+
         if node_name not in self.change_state_client_dict: 
             self.create_change_state_client(node_name)
 
@@ -195,7 +199,16 @@ class AdaptationManager(Node):
         return response.success
             
 
-    def offline_adaptation_requested(self, request, response):
+    def execute_adaptation(self, adaptation):
+        target_of_adaptation =  adaptation.adaptation_target
+        if(target_of_adaptation == Adaptation.STATETRANSITION):
+            self.get_logger().info('\n\n ros_lc adaptation \n\n')
+            return self.execute_lc_adaptation(adaptation.lifecycle_adaptation,adaptation.node_name)                
+        elif(target_of_adaptation == Adaptation.ROSPARAMETER):
+            self.get_logger().info('\n\n ros_param adaptation \n\n')
+            return self.execute_rp_adaptation(adaptation.parameter_adaptation,adaptation.node_name)
+
+    def adaptation_requested(self, request, response):
         # rebet_msgs/Adaptation[] adaptation
         # ---
         # bool success
@@ -205,20 +218,20 @@ class AdaptationManager(Node):
 
         for adaptation_to_execute in request.adaptations:
             adaptation_results = []
-            target_of_adaptation = adaptation_to_execute.adaptation_target
 
-            if(target_of_adaptation is None): 
-                self.get_logger().error("Unknown or unspecified type of adaptation")
-                response.success = False
-                return response
+            is_exec_success = self.execute_adaptation(adaptation_to_execute)
+            # if(target_of_adaptation is None): 
+            #     self.get_logger().error("Unknown or unspecified type of adaptation")
+            #     response.success = False
+            #     return response
 
 
-            if(target_of_adaptation == Adaptation.STATETRANSITION):
-                self.get_logger().info('\n\n ros_lc adaptation \n\n')
-                is_exec_success = self.execute_lc_adaptation(adaptation_to_execute.lifecycle_adaptation,adaptation_to_execute.node_name)                
-            elif(target_of_adaptation == Adaptation.ROSPARAMETER):
-                self.get_logger().info('\n\n ros_param adaptation \n\n')
-                is_exec_success = self.execute_rp_adaptation(adaptation_to_execute.parameter_adaptation,adaptation_to_execute.node_name)
+            # if(target_of_adaptation == Adaptation.STATETRANSITION):
+            #     self.get_logger().info('\n\n ros_lc adaptation \n\n')
+            #     is_exec_success = self.execute_lc_adaptation(adaptation_to_execute.lifecycle_adaptation,adaptation_to_execute.node_name)                
+            # elif(target_of_adaptation == Adaptation.ROSPARAMETER):
+            #     self.get_logger().info('\n\n ros_param adaptation \n\n')
+            #     is_exec_success = self.execute_rp_adaptation(adaptation_to_execute.parameter_adaptation,adaptation_to_execute.node_name)
 
             adaptation_results.append(is_exec_success)
 
@@ -226,8 +239,8 @@ class AdaptationManager(Node):
         response.success = all(adaptation_results)
         return response 
        
-        
-    def online_adaptation_requested(self, request, response):
+    
+    def ext_adaptation_requested(self, request, response):
         # rebet_msgs/AdaptationOptions[] adaptation_space
         # string task_identifier
         # string adaptation_strategy
@@ -286,19 +299,21 @@ class AdaptationManager(Node):
             adap.node_name = node_name
 
             adaptation_responses = []
-             
-            if(type_of_adaptation == Adaptation.ROSPARAMETER):
-                self.get_logger().info('\n\n ros_param adaptation \n\n')
-                is_exec_success = self.execute_rp_adaptation(adaption_param,node_name)
-                adap.parameter_adaptation = adaption_param
-            elif(type_of_adaptation == Adaptation.STATETRANSITION):
-                self.get_logger().info('\n\n lifecycle adaptation \n\n')
-                is_exec_success = self.execute_lc_adaptation(suggested_configuration.configuration_transitions[i], node_name)
-                adap.lifecycle_adaptation = suggested_configuration.configuration_transitions[i]
-            else:
-                self.get_logger().error("Unknown or unspecified adaptation_target")
-                response.success = False
-                return response
+            is_exec_success = self.execute_adaptation(adap)
+
+            # if(type_of_adaptation == Adaptation.ROSPARAMETER):
+            #     self.get_logger().info('\n\n ros_param adaptation \n\n')
+            #     is_exec_success = self.execute_rp_adaptation(adaption_param,node_name)
+            #     adap.parameter_adaptation = adaption_param
+            # elif(type_of_adaptation == Adaptation.STATETRANSITION):
+            #     self.get_logger().info('\n\n lifecycle adaptation \n\n')
+            #     is_exec_success = self.execute_lc_adaptation(suggested_configuration.configuration_transitions[i], node_name)
+            #     adap.lifecycle_adaptation = suggested_configuration.configuration_transitions[i]
+            # else:
+            #     self.get_logger().error("Unknown or unspecified adaptation_target")
+            #     response.success = False
+            #     return response
+            
             adaptation_responses.append(is_exec_success)
             if(is_exec_success):
                 response.applied_adaptations.append(adap)

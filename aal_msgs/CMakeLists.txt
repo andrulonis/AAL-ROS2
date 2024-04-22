@@ -17,8 +17,9 @@ find_package(rcl_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/OnlineAdaptation.srv"
-  "srv/OfflineAdaptation.srv"
+  "srv/AdaptArchitectureExternal.srv"
+  "srv/AdaptArchitecture.srv"
+  "srv/RuntimeLaunch.srv"
   "msg/AdaptationState.msg"
   "msg/Adaptation.msg"
   "msg/AdaptationOptions.msg"
