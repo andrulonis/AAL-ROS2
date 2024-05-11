@@ -17,7 +17,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='ega',
-    maintainer_email='EGAlberts@github.com',
+    maintainer_email='anonymized@github.com',
     description='TODO: Package description',
     license='Apache-2.0',
     tests_require=['pytest'],
