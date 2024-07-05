@@ -3,8 +3,8 @@
 <package format="3">
   <name>aal</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="anonymized@github.com">ega</maintainer>
+  <description>(Software) Architectural Adaptation Layer </description>
+  <maintainer email="EGAlberts@github.com">ega</maintainer>
   <license>Apache-2.0</license>
 
   <test_depend>ament_copyright</test_depend>
