@@ -3,16 +3,13 @@ import rclpy
 from rclpy.node import Node
 from aal_msgs.srv import AdaptArchitectureExternal, AdaptArchitecture
 from rcl_interfaces.msg import Parameter
-from std_msgs.msg import Float64
 from aal_msgs.msg import AdaptationState, Configuration, Adaptation
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rcl_interfaces.srv import SetParameters
 from aal.adaptation_strategies import create_strategy
-from lifecycle_msgs.srv import ChangeState, GetState
+from lifecycle_msgs.srv import ChangeState
 from itertools import product
-import numpy as np
-import sys
 
 
 def value_from_param(param_msg):
@@ -29,16 +26,18 @@ def value_from_param(param_msg):
     if(param_type == 9): return param_msg.value.string_array_value
 
 class AdaptationManager(Node):
+    
+
+    EXT_SERV_NAME = '/adapt_architecture_external'
+    INT_SERV_NAME = '/adapt_architecture'
 
     def __init__(self): 
         super().__init__('adaptation_manager')
 
         self.task_to_strategy_map = {}
-        self.i = 0
-        exclusive_group = MutuallyExclusiveCallbackGroup()
 
-        self.srv_ext_adapt = self.create_service(AdaptArchitectureExternal, '/adapt_architecture_external',self.ext_adaptation_requested)
-        self.srv_adapt = self.create_service(AdaptArchitecture, '/adapt_architecture',self.adaptation_requested)
+        self.srv_ext_adapt = self.create_service(AdaptArchitectureExternal,self.EXT_SERV_NAME,self.ext_adaptation_requested)
+        self.srv_adapt = self.create_service(AdaptArchitecture, self.INT_SERV_NAME,self.adaptation_requested)
 
         self.reporting = [0,0]
 
@@ -47,6 +46,7 @@ class AdaptationManager(Node):
         self.change_state_client_dict = {}
         self.get_state_client_dict = {}
         self.reporting_dict = {}
+        self.get_logger().info("AAL initialized, now providing %s and %s services" % (self.INT_SERV_NAME, self.EXT_SERV_NAME))
         
 
     def make_configurations(self, adaptation_options_list):
