@@ -1,11 +1,13 @@
 from aal.adaptation_strategies.random_adaptation_strategy import RandomStrategy
 from aal.adaptation_strategies.bandit_adaptation_strategy import BanditStrategy
+from aal.adaptation_strategies.prism_adaptation_strategy import PrismStrategy
 
 
 def create_strategy(strategy_name):
     online_strategies = {
         "random_strategy": RandomStrategy,
-        "ucb_strategy": (BanditStrategy, "UCB")
+        "ucb_strategy": (BanditStrategy, "UCB"),
+        "prism_strategy": PrismStrategy
     }
 
     
