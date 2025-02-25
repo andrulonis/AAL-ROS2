@@ -11,11 +11,17 @@ class PrismStrategy(AdaptationStrategy):
         
     def suggest_adaptation(self, adaptation_state):
         possible_configs = adaptation_state.possible_configurations
+        
+        # Run PRSIM in subprocess
+        completed_process = subprocess.run(
+            ['~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism -dir ~/rebet_ws/prism-4.8.1-linux64-x86/prism-examples/simple/dice dice.pm dice.pctl -prop 2'],
+            shell=True, capture_output=True, text=True
+            )
 
-        subprocess.run(['~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism ~/rebet_ws/prism-4.8.1-linux64-x86/prism-examples/simple/dice/dice.pm'], shell=True)
-
-        print("\n\n\n\n\n DUPA \n\n\n\n")
+        # Parse output
+        output = completed_process.stdout
+        i = output.find("Result:")
+        prop_result = float(output[i:].split()[1])
 
         chosen_config = np.random.choice(possible_configs)
-
         return chosen_config
