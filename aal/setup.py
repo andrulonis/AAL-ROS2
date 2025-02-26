@@ -24,12 +24,12 @@ setup(
     entry_points={
         'console_scripts': [
             'adaptation_layer = aal.adaptation_manager_node:main',
-            'launch_service = aal.launch_as_a_service:main',
             'demo_publisherA = aal.demos.publisher_A:main',
             'demo_publisherB = aal.demos.publisher_B:main',
             'demo_subscriber = aal.demos.subscriber:main',
             'demo_swap_publishers = aal.demos.swap_two_publishers:main',
             'demo_change_topics = aal.demos.change_topics:main',
+            'test_adap_strategy = aal.testing.max_velocity:main',
         ],
     },
 )

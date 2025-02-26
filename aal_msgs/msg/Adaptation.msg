@@ -1,4 +1,4 @@
-#Targest of adaptations supported.
+#Targets of adaptations supported.
 int8 STATETRANSITION=0
 int8 ROSPARAMETER=1
 int8 CONNECTION=2
