@@ -4,4 +4,4 @@ string task_identifier
 string adaptation_strategy
 ---
 bool success
-Adaptation[] applied_adaptations
+aal_msgs/Adaptation[] applied_adaptations
