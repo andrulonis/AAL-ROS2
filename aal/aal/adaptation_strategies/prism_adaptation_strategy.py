@@ -11,12 +11,14 @@ class PrismStrategy(AdaptationStrategy):
         
     def suggest_adaptation(self, adaptation_state):
         possible_configs = adaptation_state.possible_configurations
-        
+        model = '~/rebet_ws/prism-4.8.1-linux64-x86/prism-examples/simple/dice/dice.pm'
+        props = '~/rebet_ws/prism-4.8.1-linux64-x86/prism-examples/simple/dice/dice.pctl'
+        prop_index = 2
+
         # Run PRSIM in subprocess
         completed_process = subprocess.run(
-            ['~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism -dir ~/rebet_ws/prism-4.8.1-linux64-x86/prism-examples/simple/dice dice.pm dice.pctl -prop 2'],
-            shell=True, capture_output=True, text=True
-            )
+            [f'~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism {model} {props} -prop {prop_index}'],
+            shell=True, capture_output=True, text=True)
 
         # Parse output
         output = completed_process.stdout
