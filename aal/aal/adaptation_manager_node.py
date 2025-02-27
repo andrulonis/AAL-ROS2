@@ -240,6 +240,7 @@ class AdaptationManager(Node):
 
 
         adapt_state.current_utility = utilities
+        adapt_state.safeties = request.safeties
 
         self.get_logger().info('\n\n sys util \n\n' + str(utilities))
 
