@@ -38,3 +38,7 @@ endmodule
 //     [safety_qr_not_met] true : -1;
 // endrewards
 
+const double safety = 0.05534873902797699;
+const double power = 37.93861389160156;
+const double move = 0.3914274275302887;
+const double speed = 0.26;

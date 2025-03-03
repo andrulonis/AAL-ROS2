@@ -49,12 +49,14 @@ class PrismStrategy(AdaptationStrategy):
             prop_results = []
             output = completed_process.stdout
 
+            print(output)
+
             # Put results for each property in an array
             for result_string in output.split("Result: ")[1:]:
                 prop_results.append(float(result_string.split()[0]))
 
             print(prop_results)
-            util = speed # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here
+            util = prop_results[0] # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here
             if util > best_util:
                 best_config = config
                 best_util = util
