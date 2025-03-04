@@ -2,17 +2,23 @@ dtmc // Maybe make it continuous instead
 
 const double max_speed = 0.26;
 
+const double saf_alpha1 = 0.8;
+const double saf_alpha2 = 0.8;
 const double saf_threshold = 0.15;
-const double saf_prob_good = 1 - (speed / max_speed);    // will be learned in future
-const double saf_prob_bad = speed / max_speed;           // will be learned in future
+const double saf_prob_good = 1 - saf_alpha1 * (speed / max_speed);    // will be learned in future
+const double saf_prob_bad = saf_alpha2 * (speed / max_speed);           // will be learned in future
 
+const double pow_alpha1 = 0.8;
+const double pow_alpha2 = 0.8;
 const double pow_threshold = 4.0;
-const double pow_prob_good = 1 - (speed / max_speed);    // will be learned in future
-const double pow_prob_bad = speed / max_speed;           // will be learned in future
+const double pow_prob_good = 1 - pow_alpha1 * (speed / max_speed);    // will be learned in future
+const double pow_prob_bad = pow_alpha2 * (speed / max_speed);           // will be learned in future
 
+const double mov_alpha1 = 0.8;
+const double mov_alpha2 = 0.7;
 const double mov_threshold = 0.4;
-const double mov_prob_good = speed / max_speed;          // will be learned in future
-const double mov_prob_bad = 1 - (speed / max_speed);     // will be learned in future
+const double mov_prob_good = mov_alpha1 * (speed / max_speed);          // will be learned in future
+const double mov_prob_bad = 1 - mov_alpha2 * (speed / max_speed);     // will be learned in future
 
 module saf_qr
     s1: [0..1] init safety > saf_threshold ? 1 : 0; // 0 = QR not met, 1 = QR met
@@ -33,8 +39,16 @@ module mov_qr
 endmodule
 
 
-// rewards
-//     [safety_qr_met] true : 1;
-//     [safety_qr_not_met] true : -1;
-// endrewards
+//rewards "safety"
+//    [safer] true : 1;
+//    [unsafe] true : -1;
+//endrewards
+//
+//rewards "power"
+//
+//endrewards
+//
+//rewards "movement"
+//
+//endrewards
 

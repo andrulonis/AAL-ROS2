@@ -9,14 +9,14 @@ class PrismStrategy(AdaptationStrategy):
 
     def __init__(self):
         super().__init__('prism')
-        
+ 
     def suggest_adaptation(self, adaptation_state):
         print("\n\nstart\n\n")
         print(f"utility: {adaptation_state.current_utility}")
         print(f"safety: {adaptation_state.safeties}")
         print(f"power: {adaptation_state.powers}")
         print(f"move: {adaptation_state.moves}")
-        
+
         prism_bin = "~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism"
         models_path = '~/rebet_ws/src/aal/aal/aal/adaptation_strategies/models'
         full_models_path = os.path.expanduser(models_path)
@@ -63,3 +63,15 @@ class PrismStrategy(AdaptationStrategy):
 
         print("\n\nend\n\n")
         return best_config
+
+    # def suggest_adaptation(self, adaptation_state):
+    #     with open(os.path.expanduser('~/rebet_ws/results.txt'), 'a+') as f:
+    #         f.write("Start\n")
+    #         f.write(f"safety: {adaptation_state.safeties[0]}\n")
+    #         f.write(f"QR met: {adaptation_state.safeties[0] >= 0.15}\n")
+    #         f.write(f"power: {adaptation_state.powers[0]}\n")
+    #         f.write(f"QR met: {adaptation_state.powers[0] <= 4.0}\n")
+    #         f.write(f"move: {adaptation_state.moves[0]}\n")
+    #         f.write(f"QR met: {adaptation_state.moves[0] >= 0.4}\n")
+    #         f.write("End\n\n")
+    #     return adaptation_state.possible_configurations[2]
