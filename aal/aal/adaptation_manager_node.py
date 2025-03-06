@@ -240,23 +240,11 @@ class AdaptationManager(Node):
 
         adapt_state.current_utility = utilities
 
-        if(list(request.safeties) == []):
-            self.get_logger().info("assuming  this is the first time, filling safety with dummy value")
-            adapt_state.safeties = [0.0]
+        if(list(request.qrs) == []):
+            self.get_logger().info("assuming  this is the first time, filling qrs with dummy value")
+            adapt_state.qrs = []
         else:
-            adapt_state.safeties = request.safeties
-
-        if(list(request.powers) == []):
-            self.get_logger().info("assuming  this is the first time, filling power with dummy value")
-            adapt_state.powers = [0.0]
-        else:
-            adapt_state.powers = request.powers
-
-        if(list(request.moves) == []):
-            self.get_logger().info("assuming  this is the first time, filling move with dummy value")
-            adapt_state.moves = [0.0]
-        else:
-            adapt_state.moves = request.moves
+            adapt_state.qrs = request.qrs
 
         self.get_logger().info('\n\n sys util \n\n' + str(utilities))
 
