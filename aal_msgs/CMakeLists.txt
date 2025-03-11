@@ -17,6 +17,7 @@ find_package(rcl_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 find_package(rebet_msgs REQUIRED)
+find_package(diagnostic_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/AdaptArchitectureExternal.srv"
@@ -26,7 +27,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/AdaptationOptions.msg"
   "msg/Configuration.msg"
 
-  DEPENDENCIES builtin_interfaces rcl_interfaces lifecycle_msgs rebet_msgs
+  DEPENDENCIES builtin_interfaces rcl_interfaces lifecycle_msgs rebet_msgs diagnostic_msgs
 )
 
 if(BUILD_TESTING)

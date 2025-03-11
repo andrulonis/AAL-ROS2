@@ -1,6 +1,7 @@
 aal_msgs/AdaptationOptions[] adaptation_space
 float64[] utility_previous
 rebet_msgs/QR[] qrs
+diagnostic_msgs/KeyValue[] context
 string task_identifier
 string adaptation_strategy
 ---

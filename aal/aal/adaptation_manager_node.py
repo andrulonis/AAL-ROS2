@@ -246,6 +246,12 @@ class AdaptationManager(Node):
         else:
             adapt_state.qrs = request.qrs
 
+        if(list(request.context) == []):
+            self.get_logger().info("assuming  this is the first time, filling context with dummy value")
+            adapt_state.context = []
+        else:
+            adapt_state.context = request.context
+
         self.get_logger().info('\n\n sys util \n\n' + str(utilities))
 
         adapt_state.possible_configurations = self.make_configurations(request.adaptation_space)

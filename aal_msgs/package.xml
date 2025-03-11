@@ -22,7 +22,7 @@
   <depend>rcl_interfaces</depend>
 
   <depend>rebet_msgs</depend>
-
+  <depend>diagnostic_msgs</depend>
   
 
   <member_of_group>rosidl_interface_packages</member_of_group>
