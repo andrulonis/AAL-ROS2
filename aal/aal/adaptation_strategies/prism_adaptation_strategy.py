@@ -13,7 +13,8 @@ class PrismStrategy(AdaptationStrategy):
     def suggest_adaptation(self, adaptation_state):
         print("\n\nstart\n\n")
 
-        print(f'{adaptation_state.possible_configurations}')
+        for config in adaptation_state.possible_configurations:
+            print(config)
         print(f'{adaptation_state.qrs}')
         print(f'{adaptation_state.context}')
         print(f"utility: {adaptation_state.current_utility}")
