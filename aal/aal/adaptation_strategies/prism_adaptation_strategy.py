@@ -36,45 +36,41 @@ class PrismStrategy(AdaptationStrategy):
         for kv in adaptation_state.context:
             base_model += f'\nconst double {kv.key.lower()} = {kv.value.lower()};'
 
-        print(base_model)
-
         for config in possible_configs:
-        #     speed = config.configuration_parameters[0].value.double_array_value[0]
-
             # TODO: consider what to do at the beginning/when the values from frog_adapt_nodes (utility_of_adaptation()) come as 0.0 or negative
-            
-            # TODO: What if there are multiple configurations, i.e. the rate and topic
-            configname = config.configuration_parameters[0].name
-            configname = configname.split(';')[0]
 
-            # TODO: What if its not a double, idk how to know beforehand.
-            configvalue = config.configuration_parameters[0].value.double_value
-
-            # Fill in monitored/config-speicifc data into model
+            # Fill in configuration parameters in model
             with open(f'{full_models_path}/final_model.pm','w') as model_file:
                 model_file.write(base_model)
-                model_file.write(f'\nconst double {configname} = {configvalue};')
+                for param in config.configuration_parameters:
+                    if param.value.type == 1:
+                        model_file.write(f'\nconst bool {param.name} = {param.value.bool_value};')
+                    elif param.value.type == 2:
+                        model_file.write(f'\nconst int {param.name} = {param.value.integer_value};')
+                    elif param.value.type == 3:
+                        model_file.write(f'\nconst double {param.name} = {param.value.double_value};')
+                    # TODO: handle array or string types.
                 
-            # # Run PRISM for config
-            # completed_process = subprocess.run(
-            #     [f'{prism_bin} {models_path}/final_model.pm {models_path}/properties.pctl'],
-            #     shell=True, capture_output=True, text=True)
+            # Run PRISM for config
+            completed_process = subprocess.run(
+                [f'{prism_bin} {models_path}/final_model.pm {models_path}/properties.pctl'],
+                shell=True, capture_output=True, text=True)
 
-            # # Parse output
-            # prop_results = []
-            # output = completed_process.stdout
+            # Parse output
+            prop_results = []
+            output = completed_process.stdout
 
             # print(output)
 
-            # # Put results for each property in an array
-            # for result_string in output.split("Result: ")[1:]:
-            #     prop_results.append(float(result_string.split()[0]))
+            # Put results for each property in an array
+            for result_string in output.split("Result: ")[1:]:
+                prop_results.append(float(result_string.split()[0]))
 
-            # # print(prop_results)
-            # util = prop_results[0] # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here
-            # if util > best_util:
-            #     best_config = config
-            #     best_util = util
+            # print(prop_results)
+            util = prop_results[0] # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here
+            if util > best_util:
+                best_config = config
+                best_util = util
 
         print("\n\nend\n\n")
         return best_config
