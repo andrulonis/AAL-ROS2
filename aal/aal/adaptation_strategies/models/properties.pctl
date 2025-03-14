@@ -1,1 +1,5 @@
-S=?[s=0]
+R{"energy"}=? [C<=num_predictions*2]
+R{"pictures"}=? [C<=num_predictions*2]
+
+// S<0.01 [ power_budget <= "energy" ]
+// P<=0.95 [ F "energy" <= power_budget ]

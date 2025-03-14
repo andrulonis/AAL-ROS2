@@ -44,7 +44,7 @@ class PrismStrategy(AdaptationStrategy):
                 model_file.write(base_model)
                 for param in config.configuration_parameters:
                     if param.value.type == 1:
-                        model_file.write(f'\nconst bool {param.name} = {param.value.bool_value};')
+                        model_file.write(f'\nconst bool {param.name} = {str(param.value.bool_value).lower()};')
                     elif param.value.type == 2:
                         model_file.write(f'\nconst int {param.name} = {param.value.integer_value};')
                     elif param.value.type == 3:
