@@ -9,6 +9,12 @@ class PrismStrategy(AdaptationStrategy):
 
     def __init__(self):
         super().__init__('prism')
+
+    # Will want this to be not a specific function, but rather something the user can specify
+    def calculate_utility(self, props):
+        if not props[1]:
+            return 0
+        return props[3]
  
     def suggest_adaptation(self, adaptation_state):
         print("\n\nstart\n\n")
@@ -49,6 +55,11 @@ class PrismStrategy(AdaptationStrategy):
                         model_file.write(f'\nconst int {param.name} = {param.value.integer_value};')
                     elif param.value.type == 3:
                         model_file.write(f'\nconst double {param.name} = {param.value.double_value};')
+                    elif param.value.type == 4:
+                        # TODO: PRISM does not have strings, hence for each new string parameter one needs to add a special rule/handling for it
+                        if (param.name == "image_topic_name"):
+                            internal = param.value.string_value == "/camera/image_noisy"
+                            model_file.write(f'\nconst bool {param.name} = {str(internal).lower()};')
                     # TODO: handle array or string types.
                 
             # Run PRISM for config
@@ -67,10 +78,10 @@ class PrismStrategy(AdaptationStrategy):
                 prop_results.append(float(result_string.split()[0]))
 
             # print(prop_results)
-            util = prop_results[0] # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here
-            if util > best_util:
-                best_config = config
-                best_util = util
+            # util = prop_results[0] # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here or possibly make the "scientist" to provide a utility function and then just call it here, define an empty one in this file above
+            # if util > best_util:
+            #     best_config = config
+            #     best_util = util
 
         print("\n\nend\n\n")
         return best_config

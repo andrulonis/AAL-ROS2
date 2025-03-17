@@ -1,5 +1,5 @@
 R{"energy"}=? [C<=num_predictions*2]
-R{"pictures"}=? [C<=num_predictions*2]
+//R{"energy"}<power_budget-(59.275 * 5*(obstacles-obs_detected))[C<=num_predictions*2] //budget minus expected energy needed for remaining mission
+//R{"pictures"}=? [C<=num_predictions*2]
 
-// S<0.01 [ power_budget <= "energy" ]
-// P<=0.95 [ F "energy" <= power_budget ]
+// idea: We want 5 pictures per obstacle. Each adaptation should insentivise resulting in 5 good pictures while maintaining enough battery for the remaining mission
