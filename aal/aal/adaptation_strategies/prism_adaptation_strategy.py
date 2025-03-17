@@ -10,6 +10,7 @@ class PrismStrategy(AdaptationStrategy):
     def __init__(self):
         super().__init__('prism')
 
+    # TODO: Once done, move this function out to a utility_function.py and then we can say it is abstracted and replacable
     # Will want this to be not a specific function, but rather something the user can specify
     def calculate_utility(self, props):
         if not props[1]:
@@ -56,11 +57,10 @@ class PrismStrategy(AdaptationStrategy):
                     elif param.value.type == 3:
                         model_file.write(f'\nconst double {param.name} = {param.value.double_value};')
                     elif param.value.type == 4:
-                        # TODO: PRISM does not have strings, hence for each new string parameter one needs to add a special rule/handling for it
+                        # PRISM does not have strings, hence for each string parameter one needs to add a special rule/handling for it
                         if (param.name == "image_topic_name"):
-                            internal = param.value.string_value == "/camera/image_noisy"
-                            model_file.write(f'\nconst bool {param.name} = {str(internal).lower()};')
-                    # TODO: handle array or string types.
+                            int_cam_used = param.value.string_value == "/camera/image_noisy"
+                            model_file.write(f'\nconst bool int_cam_used = {str(int_cam_used).lower()};')
                 
             # Run PRISM for config
             completed_process = subprocess.run(
