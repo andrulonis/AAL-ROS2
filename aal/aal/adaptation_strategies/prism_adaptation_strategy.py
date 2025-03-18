@@ -15,16 +15,14 @@ class PrismStrategy(AdaptationStrategy):
     def calculate_utility(self, props):
         if not props[1]:
             return 0
-        return props[3]
+        return props[2]
  
     def suggest_adaptation(self, adaptation_state):
         print("\n\nstart\n\n")
 
-        for config in adaptation_state.possible_configurations:
-            print(config)
-        print(f'{adaptation_state.qrs}')
-        print(f'{adaptation_state.context}')
-        print(f"utility: {adaptation_state.current_utility}")
+        # print(f'{adaptation_state.qrs}')
+        # print(f'{adaptation_state.context}')
+        # print(f"utility: {adaptation_state.current_utility}")
 
         prism_bin = "~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism"
         models_path = '~/rebet_ws/src/aal/aal/aal/adaptation_strategies/models'
@@ -34,6 +32,12 @@ class PrismStrategy(AdaptationStrategy):
         best_config = possible_configs[0]
         best_util = float('-inf')
 
+        # TODO: find better way to check if required context is present
+        contextkeys = [kv.key.lower() for kv in adaptation_state.context]
+        if 'power_budget' not in contextkeys or 'obstacles' not in contextkeys or 'obs_detected' not in contextkeys:
+            print("Important context is missing")
+            return best_config
+
         with open(f'{full_models_path}/base_model.pm','r') as base_model_file:
             base_model = base_model_file.read()
 
@@ -42,10 +46,9 @@ class PrismStrategy(AdaptationStrategy):
 
         for kv in adaptation_state.context:
             base_model += f'\nconst double {kv.key.lower()} = {kv.value.lower()};'
+        
 
         for config in possible_configs:
-            # TODO: consider what to do at the beginning/when the values from frog_adapt_nodes (utility_of_adaptation()) come as 0.0 or negative
-
             # Fill in configuration parameters in model
             with open(f'{full_models_path}/final_model.pm','w') as model_file:
                 model_file.write(base_model)
@@ -75,13 +78,23 @@ class PrismStrategy(AdaptationStrategy):
 
             # Put results for each property in an array
             for result_string in output.split("Result: ")[1:]:
-                prop_results.append(float(result_string.split()[0]))
+                value_string = result_string.split()[0]
+                if value_string == "true":
+                    prop_results.append(True)
+                elif value_string == "false":
+                    prop_results.append(False)
+                elif value_string.isdigit():
+                     prop_results.append(int(value_string))
+                else:
+                     prop_results.append(float(value_string))
 
-            # print(prop_results)
-            # util = prop_results[0] # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here or possibly make the "scientist" to provide a utility function and then just call it here, define an empty one in this file above
-            # if util > best_util:
-            #     best_config = config
-            #     best_util = util
+            print(f'\nResults for config with rate {config.configuration_parameters[0].value.integer_value} and topic {config.configuration_parameters[1].value.string_value}:')
+            print(f'{prop_results}')
+
+            util = self.calculate_utility(prop_results) # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here or possibly make the "scientist" to provide a utility function and then just call it here, define an empty one in this file above
+            if util > best_util:
+                best_config = config
+                best_util = util
 
         print("\n\nend\n\n")
         return best_config
