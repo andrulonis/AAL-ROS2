@@ -10,18 +10,21 @@ class PrismStrategy(AdaptationStrategy):
     def __init__(self):
         super().__init__('prism')
 
+    # TODO: add here or in the model the case when we are out of power_budget, then assign -infinity as utility so we do not allow such adapatation to be sent at all and then think if we somehow want to exclude the internal cam adaptation model checking and just do it on the external one to preserve computation time
     # TODO: Once done, move this function out to a utility_function.py and then we can say it is abstracted and replacable
     # Will want this to be not a specific function, but rather something the user can specify
     def calculate_utility(self, props):
         if not props[1]:
             return 0
+        if props[3] == 1 and props[4] == 1:
+            return float('-inf')
         return props[2]
  
     def suggest_adaptation(self, adaptation_state):
         print("\n\nstart\n\n")
 
         # print(f'{adaptation_state.qrs}')
-        # print(f'{adaptation_state.context}')
+        print(f'{adaptation_state.context}')
         # print(f"utility: {adaptation_state.current_utility}")
 
         prism_bin = "~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism"
@@ -74,7 +77,7 @@ class PrismStrategy(AdaptationStrategy):
             prop_results = []
             output = completed_process.stdout
 
-            # print(output)
+            print(output)
 
             # Put results for each property in an array
             for result_string in output.split("Result: ")[1:]:
