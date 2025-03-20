@@ -14,32 +14,55 @@ class PrismStrategy(AdaptationStrategy):
     # TODO: Once done, move this function out to a utility_function.py and then we can say it is abstracted and replacable
     # Will want this to be not a specific function, but rather something the user can specify
     def calculate_utility(self, props):
+        # If configuration uses too much power, discourage by setting utility to negative power draw
         if not props[1]:
-            return 0
-        if props[3] == 1 and props[4] == 1:
-            return float('-inf')
+            return -1 * props[0]
+        # Otherwise, if the power usage is fine, 
         return props[2]
  
-    def suggest_adaptation(self, adaptation_state):
+    def suggest_adaptation(self, adaptation_state, **kwargs):
         print("\n\nstart\n\n")
+        model_dir = kwargs.get('model_dir', None)
 
-        # print(f'{adaptation_state.qrs}')
+        print(f'{adaptation_state.qrs}')
         print(f'{adaptation_state.context}')
         # print(f"utility: {adaptation_state.current_utility}")
 
         prism_bin = "~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism"
-        models_path = '~/rebet_ws/src/aal/aal/aal/adaptation_strategies/models'
-        full_models_path = os.path.expanduser(models_path)
+        if model_dir != '':
+            full_models_path = model_dir
+        else:
+            models_path = '~/rebet_ws/src/aal/aal/aal/adaptation_strategies/models'
+            full_models_path = os.path.expanduser(models_path)
 
         possible_configs = adaptation_state.possible_configurations
         best_config = possible_configs[0]
         best_util = float('-inf')
 
-        # TODO: find better way to check if required context is present
-        contextkeys = [kv.key.lower() for kv in adaptation_state.context]
-        if 'power_budget' not in contextkeys or 'obstacles' not in contextkeys or 'obs_detected' not in contextkeys:
-            print("Important context is missing")
-            return best_config
+        str_vars = {}
+        keys =  [kv.key.lower() for kv in adaptation_state.context] + \
+                [qr.qr_name.lower() for qr in adaptation_state.qrs] + \
+                [param.name for param in possible_configs[0].configuration_parameters]
+        
+        with open(f'{full_models_path}/required_vars.txt', 'r') as required_vars_file:
+            for var in required_vars_file:
+                split_line = var.split()
+                # Regular case of variable written straight to the model
+                if len(split_line) == 1:
+                    if var.strip() not in keys:
+                        print(f"Important context is missing: {var}")
+                        return best_config
+                # String case with possible values
+                else:
+                    if split_line[0] not in keys:
+                        print(f"Important context is missing: {split_line[0]}")
+                        return best_config
+                    else:
+                        if len(split_line[1:]) <= 1:
+                            print(f"Too few possible values for string variable: {split_line[0]}")
+                            return best_config
+                        str_vars[split_line[0]] = split_line[1:]
+
 
         with open(f'{full_models_path}/base_model.pm','r') as base_model_file:
             base_model = base_model_file.read()
@@ -63,10 +86,9 @@ class PrismStrategy(AdaptationStrategy):
                     elif param.value.type == 3:
                         model_file.write(f'\nconst double {param.name} = {param.value.double_value};')
                     elif param.value.type == 4:
-                        # PRISM does not have strings, hence for each string parameter one needs to add a special rule/handling for it
-                        if (param.name == "image_topic_name"):
-                            int_cam_used = param.value.string_value == "/camera/image_noisy"
-                            model_file.write(f'\nconst bool int_cam_used = {str(int_cam_used).lower()};')
+                        if param.value.string_value not in str_vars[param.name]:
+                            print(f"Value given to string {param.name} not listed as possible valus")
+                        model_file.write(f'\nconst int {param.name} = {str_vars[param.name].index(param.value.string_value)};')
                 
             # Run PRISM for config
             completed_process = subprocess.run(
@@ -94,7 +116,7 @@ class PrismStrategy(AdaptationStrategy):
             print(f'\nResults for config with rate {config.configuration_parameters[0].value.integer_value} and topic {config.configuration_parameters[1].value.string_value}:')
             print(f'{prop_results}')
 
-            util = self.calculate_utility(prop_results) # TODO: rethink, maybe the utility can be calculated in the model as a property rather than here or possibly make the "scientist" to provide a utility function and then just call it here, define an empty one in this file above
+            util = self.calculate_utility(prop_results) # TODO: import this function
             if util > best_util:
                 best_config = config
                 best_util = util

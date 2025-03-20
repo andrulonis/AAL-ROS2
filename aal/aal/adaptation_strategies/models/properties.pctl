@@ -1,5 +1,5 @@
 R{"energy"}=? [C<=num_predictions*2]
 R{"energy"}<power_budget-(59.275 * (5*obstacles-obs_detected))[C<=num_predictions*2] //budget minus expected energy needed for remaining mission
 R{"pictures"}=? [C<=num_predictions*2]
-P=? [X power_budget < 0]
-P=? [X int_cam_used = true]
+//P=? [X power_budget < 0]
+//P=? [X int_cam_used = true]
