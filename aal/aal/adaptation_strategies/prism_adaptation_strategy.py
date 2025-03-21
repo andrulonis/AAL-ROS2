@@ -20,7 +20,7 @@ class PrismStrategy(AdaptationStrategy):
         print(f'{adaptation_state.context}')
         # print(f"utility: {adaptation_state.current_utility}")
 
-        prism_bin = "~/rebet_ws/prism-4.8.1-linux64-x86/bin/prism"
+        prism_bin = "~/rebet_ws/aal/prism-4.8.1-linux64-x86/bin/prism"
         if model_dir != '':
             full_models_path = model_dir
         else:
@@ -94,7 +94,7 @@ class PrismStrategy(AdaptationStrategy):
             prop_results = []
             output = completed_process.stdout
 
-            print(output)
+            # print(output)
 
             # Put results for each property in an array
             for result_string in output.split("Result: ")[1:]:
