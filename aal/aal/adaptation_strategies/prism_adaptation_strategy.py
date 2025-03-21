@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-import numpy as np
 import subprocess
 import os
-from importlib.machinery import SourceFileLoader
 import sys
 
 from aal.adaptation_strategies.adaptation_strategy import AdaptationStrategy
@@ -13,11 +11,11 @@ class PrismStrategy(AdaptationStrategy):
         super().__init__('prism')
  
     def suggest_adaptation(self, adaptation_state, **kwargs):
-        print("\n\nstart\n\n")
+        # print("\n\nstart\n\n")
         model_dir = kwargs.get('model_dir', None)
 
-        print(f'{adaptation_state.qrs}')
-        print(f'{adaptation_state.context}')
+        # print(f'{adaptation_state.qrs}')
+        # print(f'{adaptation_state.context}')
         # print(f"utility: {adaptation_state.current_utility}")
 
         prism_bin = "~/rebet_ws/aal/prism-4.8.1-linux64-x86/bin/prism"
@@ -116,6 +114,6 @@ class PrismStrategy(AdaptationStrategy):
                 best_config = config
                 best_util = util
 
-        print("\n\nend\n\n")
+        # print("\n\nend\n\n")
         return best_config
     
