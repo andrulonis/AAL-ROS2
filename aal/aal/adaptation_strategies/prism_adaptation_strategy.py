@@ -2,6 +2,8 @@
 import numpy as np
 import subprocess
 import os
+from importlib.machinery import SourceFileLoader
+import sys
 
 from aal.adaptation_strategies.adaptation_strategy import AdaptationStrategy
 
@@ -9,16 +11,6 @@ class PrismStrategy(AdaptationStrategy):
 
     def __init__(self):
         super().__init__('prism')
-
-    # TODO: add here or in the model the case when we are out of power_budget, then assign -infinity as utility so we do not allow such adapatation to be sent at all and then think if we somehow want to exclude the internal cam adaptation model checking and just do it on the external one to preserve computation time
-    # TODO: Once done, move this function out to a utility_function.py and then we can say it is abstracted and replacable
-    # Will want this to be not a specific function, but rather something the user can specify
-    def calculate_utility(self, props):
-        # If configuration uses too much power, discourage by setting utility to negative power draw
-        if not props[1]:
-            return -1 * props[0]
-        # Otherwise, if the power usage is fine, 
-        return props[2]
  
     def suggest_adaptation(self, adaptation_state, **kwargs):
         print("\n\nstart\n\n")
@@ -34,7 +26,10 @@ class PrismStrategy(AdaptationStrategy):
         else:
             models_path = '~/rebet_ws/src/aal/aal/aal/adaptation_strategies/models'
             full_models_path = os.path.expanduser(models_path)
-
+        
+        sys.path.append(full_models_path)
+        from utility_function import calculate_utility # type: ignore - Module loaded from the models dir
+        
         possible_configs = adaptation_state.possible_configurations
         best_config = possible_configs[0]
         best_util = float('-inf')
@@ -116,7 +111,7 @@ class PrismStrategy(AdaptationStrategy):
             print(f'\nResults for config with rate {config.configuration_parameters[0].value.integer_value} and topic {config.configuration_parameters[1].value.string_value}:')
             print(f'{prop_results}')
 
-            util = self.calculate_utility(prop_results) # TODO: import this function
+            util = calculate_utility(prop_results)
             if util > best_util:
                 best_config = config
                 best_util = util
