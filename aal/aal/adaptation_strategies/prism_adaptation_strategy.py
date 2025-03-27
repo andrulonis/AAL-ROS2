@@ -17,7 +17,7 @@ class PrismStrategy(AdaptationStrategy):
             full_models_path = model_dir
         else:
             # Use a default path if none is provided
-            models_path = '~/rebet_ws/src/aal/aal/aal/adaptation_strategies/models'
+            models_path = '~/rebet_ws/src/rebet_frog/PRISM_models'
             full_models_path = os.path.expanduser(models_path)
 
         # Import the utility function from the model directory

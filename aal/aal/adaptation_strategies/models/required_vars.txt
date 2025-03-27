@@ -1,6 +1,0 @@
-image_topic_name /camera/image_noisy /corner_camera/image_raw
-darkness
-num_predictions
-power_budget
-obstacles
-obs_detected
