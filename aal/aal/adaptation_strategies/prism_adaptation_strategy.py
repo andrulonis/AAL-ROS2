@@ -35,9 +35,9 @@ class PrismStrategy(AdaptationStrategy):
         # Check if all required paramtrised PRISM variables are provided (sometimes not the case in first few iterations),
         # and in case of strings, store possible values of the string in a dictionairy
         str_vars = {}
-        keys =  [kv.key.lower() for kv in adaptation_state.context] + \
-                [qr.qr_name.lower() for qr in adaptation_state.qrs] + \
-                [param.name for param in possible_configs[0].configuration_parameters]
+        keys = [kv.key.lower() for kv in adaptation_state.context] + \
+               [qr.qr_name.lower() for qr in adaptation_state.qrs] + \
+               [param.name for param in possible_configs[0].configuration_parameters]
         
         with open(f'{full_models_path}/required_vars.txt', 'r') as required_vars_file:
             for var in required_vars_file:
@@ -92,6 +92,7 @@ class PrismStrategy(AdaptationStrategy):
             # Parse output
             prop_results = []
             output = completed_process.stdout
+            print(output)
             for result_string in output.split("Result: ")[1:]:
                 value_string = result_string.split()[0]
                 # Depending on the property, result may be a bool, int or float
