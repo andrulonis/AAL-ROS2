@@ -64,7 +64,7 @@ class PrismStrategy(AdaptationStrategy):
         for qr in adaptation_state.qrs:
             base_model += f'\nconst double {qr.qr_name.lower()} = {qr.metric};'
         for kv in adaptation_state.context:
-            base_model += f'\nconst double {kv.key.lower()} = {kv.value.lower()};'
+            base_model += f'\nconst double {kv.key.lower()} = {kv.value};'
         
         for config in possible_configs:
             # Fill in configuration parameters in model
