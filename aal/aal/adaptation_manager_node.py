@@ -248,6 +248,12 @@ class AdaptationManager(Node):
         else:
             adapt_state.qrs = request.qrs
 
+        if(list(request.config) == []):
+            self.get_logger().info("assuming  this is the first time, filling config with dummy value")
+            adapt_state.config = []
+        else:
+            adapt_state.config = request.config
+
         if(list(request.context) == []):
             self.get_logger().info("assuming  this is the first time, filling context with dummy value")
             adapt_state.context = []
