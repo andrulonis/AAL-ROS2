@@ -11,7 +11,6 @@ class PrismMDPStrategy(AdaptationStrategy):
         super().__init__('prism_mdp')
  
     def suggest_adaptation(self, adaptation_state, **kwargs):
-        print("start?")
         # Get path to directory containing the model from commandline arguments
         model_dir = kwargs.get('model_dir', None)
         if model_dir != '':
@@ -72,11 +71,9 @@ class PrismMDPStrategy(AdaptationStrategy):
         
         # Generate optimal strategy optimising over specified property
                 
-        print("running PRISM now")
         completed_process = subprocess.run(
             [f'{prism_bin} {full_models_path}/mdp_final_model.pm -pf \'{prop}\' -exportstrat stdout'],
             shell=True, capture_output=True, text=True)
-        print("ran PRISM")
         
         # Parse output to obtain strategy
         output = completed_process.stdout
@@ -84,11 +81,23 @@ class PrismMDPStrategy(AdaptationStrategy):
         strategy_string = output.split("Exporting strategy as actions below:\n")[1].split("\n---")[0]
         for line in strategy_string.splitlines():
             (state, action) = line.split('=')
+            # Have state as an array of values
             config_index = int(action.split("config")[1])
             strategy[state] = config_index
 
-        # TODO:
-        # Determine current state and apply state to strategy to get the best action
+        current_state = '('
+        for param in adaptation_state.config:
+            current_state += param.value + ','
+        current_state = current_state[:-1] + ')'
+
+        choice = strategy[current_state]
+        chosen_config = possible_configs[choice]
+
+        print(strategy)
+        print(current_state)
+        print(choice)
+        print(chosen_config)
+
 
         return chosen_config
     
