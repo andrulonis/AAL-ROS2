@@ -17,11 +17,13 @@ class PrismMDPStrategy(AdaptationStrategy):
             full_models_path = model_dir
         else:
             # Use a default path if none is provided
-            models_path = '~/rebet_ws/src/rebet_frog/PRISM_models'
+            models_path = '~/rebet_ws/src/rebet_frog/PRISM_models/mdp'
             full_models_path = os.path.expanduser(models_path)
 
+
         # TODO: get property from user, for now assume we want to maximize the first reward up until a user defined goal
-        prop ='Rmax=?[F"goal"]'
+        with open(f'{full_models_path}/property.pctl') as property_file:
+            prop = property_file.readline()
         
         # Get path to PRISM program
         prism_bin = "~/rebet_ws/src/aal/prism-4.8.1-linux64-x86/bin/prism"
@@ -85,11 +87,13 @@ class PrismMDPStrategy(AdaptationStrategy):
             config_index = int(action.split("config")[1])
             strategy[state] = config_index
 
+        # TODO: check that it's a valid state. Perhaps a similar thing to the context, where a file needs to be provided with all state parameters?
         current_state = '('
         for param in adaptation_state.config:
             current_state += param.value + ','
         current_state = current_state[:-1] + ')'
 
+        # TODO: There's also a problem where a valid state won't be in the strategy if the goal is already met or it's a deadlock. have to find a solution for it
         choice = strategy[current_state]
         chosen_config = possible_configs[choice]
 
