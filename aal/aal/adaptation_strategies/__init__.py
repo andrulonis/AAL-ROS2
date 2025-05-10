@@ -1,6 +1,6 @@
 from aal.adaptation_strategies.random_adaptation_strategy import RandomStrategy
 from aal.adaptation_strategies.bandit_adaptation_strategy import BanditStrategy
-from aal.adaptation_strategies.prism_adaptation_strategy import PrismStrategy
+from aal.adaptation_strategies.markov_chain_adaptation_strategy import PrismMarkovChainStrategy
 from aal.adaptation_strategies.mdp_adaptation_strategy import PrismMDPStrategy
 
 
@@ -8,7 +8,7 @@ def create_strategy(strategy_name):
     online_strategies = {
         "random_strategy": RandomStrategy,
         "ucb_strategy": (BanditStrategy, "UCB"),
-        "prism_strategy": PrismStrategy,
+        "markov_chain_strategy": PrismMarkovChainStrategy,
         "mdp_strategy": PrismMDPStrategy
     }
 

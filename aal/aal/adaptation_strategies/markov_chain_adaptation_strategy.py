@@ -5,10 +5,10 @@ import sys
 
 from aal.adaptation_strategies.adaptation_strategy import AdaptationStrategy
 
-class PrismStrategy(AdaptationStrategy):
+class PrismMarkovChainStrategy(AdaptationStrategy):
 
     def __init__(self):
-        super().__init__('prism')
+        super().__init__('markov_chain')
  
     def suggest_adaptation(self, adaptation_state, **kwargs):
         # Get path to directory containing the model from commandline arguments
@@ -17,7 +17,7 @@ class PrismStrategy(AdaptationStrategy):
             full_models_path = model_dir
         else:
             # Use a default path if none is provided
-            models_path = '~/rebet_ws/src/rebet_frog/PRISM_models'
+            models_path = '~/rebet_ws/src/rebet_frog/PRISM_models/markov_chain'
             full_models_path = os.path.expanduser(models_path)
 
         # Import the utility function from the model directory

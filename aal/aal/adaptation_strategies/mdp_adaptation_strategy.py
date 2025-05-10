@@ -8,7 +8,7 @@ from aal.adaptation_strategies.adaptation_strategy import AdaptationStrategy
 class PrismMDPStrategy(AdaptationStrategy):
 
     def __init__(self):
-        super().__init__('prism_mdp')
+        super().__init__('mdp')
  
     def suggest_adaptation(self, adaptation_state, **kwargs):
         # Get path to directory containing the model from commandline arguments
@@ -61,20 +61,20 @@ class PrismMDPStrategy(AdaptationStrategy):
                         str_vars[split_line[0]] = split_line[1:]
 
         # Write qr-metrics and context values to the model (all assumed to be given as doubles)
-        with open(f'{full_models_path}/mdp_base_model.pm','r') as base_model_file:
+        with open(f'{full_models_path}/base_model.pm','r') as base_model_file:
             base_model = base_model_file.read()
         for qr in adaptation_state.qrs:
             base_model += f'\nconst double {qr.qr_name.lower()} = {qr.metric};'
         for kv in adaptation_state.context:
             base_model += f'\nconst double {kv.key.lower()} = {kv.value};'
 
-        with open(f'{full_models_path}/mdp_final_model.pm','w') as model_file:
+        with open(f'{full_models_path}/final_model.pm','w') as model_file:
             model_file.write(base_model)
         
         # Generate optimal strategy optimising over specified property
                 
         completed_process = subprocess.run(
-            [f'{prism_bin} {full_models_path}/mdp_final_model.pm -pf \'{prop}\' -exportstrat stdout'],
+            [f'{prism_bin} {full_models_path}/final_model.pm -pf \'{prop}\' -exportstrat stdout'],
             shell=True, capture_output=True, text=True)
         
         # Parse output to obtain strategy
