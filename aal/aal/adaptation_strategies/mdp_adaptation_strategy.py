@@ -21,7 +21,7 @@ class PrismMDPStrategy(AdaptationStrategy):
             full_models_path = os.path.expanduser(models_path)
 
 
-        # TODO: get property from user, for now assume we want to maximize the first reward up until a user defined goal
+        # TODO: get property from user, for now assume we want to maximise the first reward up until a user defined goal
         with open(f'{full_models_path}/property.pctl') as property_file:
             prop = property_file.readline()
         
@@ -34,7 +34,7 @@ class PrismMDPStrategy(AdaptationStrategy):
 
         # Write metrics and context to model to obtain up-to-date model
 
-        # Check if all required paramtrised PRISM variables are provided (sometimes not the case in first few iterations),
+        # Check if all required parametrised PRISM variables are provided (sometimes not the case in first few iterations),
         # and in case of strings, store possible values of the string in a dictionairy
         str_vars = {}
         keys = [kv.key.lower() for kv in adaptation_state.context] + \

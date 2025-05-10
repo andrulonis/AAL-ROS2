@@ -81,7 +81,7 @@ class BanditStrategy(AdaptationStrategy):
 
     def __init__(self, bandit_name):
         super().__init__(bandit_name.lower())
-        # print("\n\nbandit created!\n\n")
+        print("\n\nbandit created!\n\n")
         self.round_num = 0
         self.bandit_name = bandit_name
         # self.declare_parameter(HYPERPARAM_PARAM,[""])
@@ -163,9 +163,9 @@ class BanditStrategy(AdaptationStrategy):
         self.utilities = [adap_utility for adap_utility in adaptation_state.current_utility ]
        
         reward = np.mean(self.utilities) #should be made more nuanced
-        # print("\n\n\n REWARD RECEIVEDD   \n\n\n" + str(reward))
+        print("\n\n\n REWARD RECEIVEDD   \n\n\n" + str(reward))
         reward, _, _ = truncate(reward)
-        # print("\n\n\n REWARD SCALED   \n\n\n" + str(reward))
+        print("\n\n\n REWARD SCALED   \n\n\n" + str(reward))
         next_arm = self.bandit_instance.get_next_arm(reward)
         self.round_num+=1
         file = open('bandit_report.csv', mode='a', newline='')

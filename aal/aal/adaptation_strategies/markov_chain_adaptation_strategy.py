@@ -32,7 +32,7 @@ class PrismMarkovChainStrategy(AdaptationStrategy):
         chosen_config = possible_configs[0]
         best_util = float('-inf')
 
-        # Check if all required paramtrised PRISM variables are provided (sometimes not the case in first few iterations),
+        # Check if all required parametrised PRISM variables are provided (sometimes not the case in first few iterations),
         # and in case of strings, store possible values of the string in a dictionairy
         str_vars = {}
         keys = [kv.key.lower() for kv in adaptation_state.context] + \
