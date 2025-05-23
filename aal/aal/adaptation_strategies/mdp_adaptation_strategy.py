@@ -16,6 +16,7 @@ class PrismMDPStrategy(AdaptationStrategy):
         if model_dir != '':
             full_models_path = model_dir
         else:
+            #TODO: 1st solution is to receive an absolute path to the model dir (that contains base_model etc.) from adaptation_state
             # Use a default path if none is provided
             models_path = '~/rebet_ws/src/rebet_frog/PRISM_models/mdp'
             full_models_path = os.path.expanduser(models_path)
@@ -41,6 +42,7 @@ class PrismMDPStrategy(AdaptationStrategy):
                [qr.qr_name.lower() for qr in adaptation_state.qrs] + \
                [param.name for param in possible_configs[0].configuration_parameters]
         
+        # TODO: if no required vars then ignore this step
         with open(f'{full_models_path}/required_vars.txt', 'r') as required_vars_file:
             for var in required_vars_file:
                 split_line = var.split()
@@ -74,11 +76,12 @@ class PrismMDPStrategy(AdaptationStrategy):
         # Generate optimal strategy optimising over specified property
                 
         completed_process = subprocess.run(
-            [f'{prism_bin} {full_models_path}/final_model.pm -pf \'{prop}\' -exportstrat stdout'],
+            [f'{prism_bin} {full_models_path}/final_model.pm -pf \'{prop}\' -exportstrat stdout:reach=false'],
             shell=True, capture_output=True, text=True)
         
         # Parse output to obtain strategy
         output = completed_process.stdout
+        print(output)
         strategy = {}
         strategy_string = output.split("Exporting strategy as actions below:\n")[1].split("\n---")[0]
         for line in strategy_string.splitlines():
@@ -87,20 +90,24 @@ class PrismMDPStrategy(AdaptationStrategy):
             config_index = int(action.split("config")[1])
             strategy[state] = config_index
 
+        print(strategy)
+
         # TODO: check that it's a valid state. Perhaps a similar thing to the context, where a file needs to be provided with all state parameters?
         current_state = '('
         for param in adaptation_state.config:
             current_state += param.value + ','
         current_state = current_state[:-1] + ')'
 
+        print(f"current_state: {current_state}")
+
         # TODO: There's also a problem where a valid state won't be in the strategy if the goal is already met or it's a deadlock. have to find a solution for it
         choice = strategy[current_state]
         chosen_config = possible_configs[choice]
 
-        print(strategy)
-        print(current_state)
-        print(choice)
-        print(chosen_config)
+        # print(strategy)
+        # print(current_state)
+        print(f"choice: {choice}")
+        print(f"chosen_config: {chosen_config}")
 
 
         return chosen_config

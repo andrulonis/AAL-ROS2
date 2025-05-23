@@ -16,6 +16,7 @@ class PrismMarkovChainStrategy(AdaptationStrategy):
         if model_dir != '':
             full_models_path = model_dir
         else:
+            #TODO: 1st solution is to receive an absolute path to the model dir (that contains base_model etc.) from adaptation_state
             # Use a default path if none is provided
             models_path = '~/rebet_ws/src/rebet_frog/PRISM_models/markov_chain'
             full_models_path = os.path.expanduser(models_path)
