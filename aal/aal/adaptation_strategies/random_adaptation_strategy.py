@@ -8,7 +8,7 @@ class RandomStrategy(AdaptationStrategy):
     def __init__(self):
         super().__init__('random')
         
-    def suggest_adaptation(self, adaptation_state, **kwargs):
+    def suggest_adaptation(self, adaptation_state):
         possible_configs = adaptation_state.possible_configurations
 
         chosen_config = np.random.choice(possible_configs)

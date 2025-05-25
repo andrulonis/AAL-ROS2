@@ -34,8 +34,6 @@ class AdaptationManager(Node):
     def __init__(self): 
         super().__init__('adaptation_manager')
 
-        self.declare_parameter('model_dir', '')
-
         self.task_to_strategy_map = {}
 
         self.srv_ext_adapt = self.create_service(AdaptArchitectureExternal,self.EXT_SERV_NAME,self.ext_adaptation_requested)
@@ -225,6 +223,7 @@ class AdaptationManager(Node):
         # rebet_msgs/AdaptationOptions[] adaptation_space
         # string task_identifier
         # string adaptation_strategy
+        # string model_dir
         # ---
         # bool success
 
@@ -233,6 +232,7 @@ class AdaptationManager(Node):
         utilities = request.utility_previous
         response.success = False
         adapt_state = AdaptationState()
+        adapt_state.model_dir = str(request.model_dir)
         self.get_logger().info(str(request))
         adaptation_at_system_level = "system" in task_identifier #TODO: make this more robust.
             
@@ -280,7 +280,7 @@ class AdaptationManager(Node):
 
         self.get_logger().info('\n\n REUSE OF STRATEGY FOR TASK:' + str(adapt_state)+'\n\n')
         
-        suggested_configuration = self.task_to_strategy_map[task_identifier].suggest_adaptation(adapt_state, model_dir=self.get_parameter('model_dir').value)
+        suggested_configuration = self.task_to_strategy_map[task_identifier].suggest_adaptation(adapt_state)
         #Configuration.msg
         #string[] node_names
         #int8[] adaptation_target_types

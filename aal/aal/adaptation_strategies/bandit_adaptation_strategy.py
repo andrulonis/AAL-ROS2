@@ -137,7 +137,7 @@ class BanditStrategy(AdaptationStrategy):
                 self.configuration_dict[string_repr] = config_msg
         
 
-    def suggest_adaptation(self, adaptation_state, **kwargs):
+    def suggest_adaptation(self, adaptation_state):
         self.possible_configs = adaptation_state.possible_configurations
 
         if(self.bandit_not_initialized):

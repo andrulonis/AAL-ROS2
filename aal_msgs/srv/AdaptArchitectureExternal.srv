@@ -5,6 +5,7 @@ diagnostic_msgs/KeyValue[] context
 diagnostic_msgs/KeyValue[] config
 string task_identifier
 string adaptation_strategy
+string model_dir
 ---
 bool success
 aal_msgs/Adaptation[] applied_adaptations

@@ -18,7 +18,7 @@ class AdaptationStrategy(ABC):
         return self.name
     
     @abstractmethod
-    def suggest_adaptation(adaptation_state, **kwargs):
+    def suggest_adaptation(adaptation_state):
         pass
 
     def parse_configurations(self, adaptation_state):
