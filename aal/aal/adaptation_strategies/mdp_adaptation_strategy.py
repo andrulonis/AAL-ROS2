@@ -93,16 +93,15 @@ class PrismMDPStrategy(AdaptationStrategy):
         
         # Parse output to obtain strategy
         output = completed_process.stdout
-        print(output)
+        # print(output)
         strategy = {}
         strategy_string = output.split("Exporting strategy as actions below:\n")[1].split("\n---")[0]
         for line in strategy_string.splitlines():
             (state, action) = line.split('=')
             # Have state as an array of values
-            config_index = int(action.split("config")[1])
-            strategy[state] = config_index
-
-        print(strategy)
+            if action:
+                config_index = int(action.split("config")[1])   
+                strategy[state] = config_index
 
         # TODO: check that it's a valid state. Perhaps a similar thing to the context, where a file needs to be provided with all state parameters?
         current_state = '('
@@ -113,13 +112,14 @@ class PrismMDPStrategy(AdaptationStrategy):
         print(f"current_state: {current_state}")
 
         # TODO: There's also a problem where a valid state won't be in the strategy if the goal is already met or it's a deadlock. have to find a solution for it
-        choice = strategy[current_state]
-        chosen_config = possible_configs[choice]
+        if current_state in strategy:
+            choice = strategy[current_state]
+            chosen_config = possible_configs[choice]
+            print(f"chosen_config: {chosen_config}")
 
         # print(strategy)
         # print(current_state)
-        print(f"choice: {choice}")
-        print(f"chosen_config: {chosen_config}")
+        # print(f"choice: {choice}")
 
 
         return chosen_config
