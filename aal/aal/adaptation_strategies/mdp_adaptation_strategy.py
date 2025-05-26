@@ -72,12 +72,15 @@ class PrismMDPStrategy(AdaptationStrategy):
                         str_vars[split_line[0]] = split_line[1:]
 
         # Write qr-metrics and context values to the model (all assumed to be given as doubles)
+        # Write state variables (config) to model as initial values (assumed to be given as ints)
         with open(f'{model_dir}/base_model.pm','r') as base_model_file:
             base_model = base_model_file.read()
         for qr in adaptation_state.qrs:
             base_model += f'\nconst double {qr.qr_name.lower()} = {qr.metric};'
         for kv in adaptation_state.context:
             base_model += f'\nconst double {kv.key.lower()} = {kv.value};'
+        for kv in adaptation_state.config:
+            base_model += f'\nconst {kv.key.lower()}_init = {kv.value};'
 
         with open(f'{model_dir}/final_model.pm','w') as model_file:
             model_file.write(base_model)
