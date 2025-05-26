@@ -27,8 +27,8 @@ class PrismMarkovChainStrategy(AdaptationStrategy):
             print(f"File base_model.pm is missing from the given directory.")
             return chosen_config
             
-        if not os.path.isfile(f"{model_dir}/property.pctl"):
-            print(f"File property.pctl is missing from the given directory.")
+        if not os.path.isfile(f"{model_dir}/properties.pctl"):
+            print(f"File properties.pctl is missing from the given directory.")
             return chosen_config
             
         if not os.path.isfile(f"{model_dir}/required_vars.txt"):
