@@ -89,6 +89,10 @@ class PrismMDPStrategy(AdaptationStrategy):
         output = completed_process.stdout
         strategy = {}
         strategy_string = output.split("Exporting strategy as actions below:\n")[1].split("\n---")[0]
+
+        if strategy_string == [output]:
+            return chosen_config
+
         for line in strategy_string.splitlines():
             (state, action) = line.split('=')
             # Have state as an array of values

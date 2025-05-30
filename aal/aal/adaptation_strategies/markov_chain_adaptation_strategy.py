@@ -94,7 +94,7 @@ class PrismMarkovChainStrategy(AdaptationStrategy):
                     elif param.value.type == 4: # Case of string
                         # PRISM does not support strings, so instead write the index of the value
                         if param.value.string_value not in str_vars[param.name]:
-                            print(f"Value given to string {param.name} not listed as possible valus")
+                            print(f"Value given to string {param.name} not listed as possible value")
                         model_file.write(f'\nconst int {param.name} = {str_vars[param.name].index(param.value.string_value)};')
                     # TODO: handle the array types as well
                 
