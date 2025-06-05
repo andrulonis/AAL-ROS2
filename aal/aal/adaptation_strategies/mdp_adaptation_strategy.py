@@ -66,15 +66,18 @@ class PrismMDPStrategy(AdaptationStrategy):
         completed_process = subprocess.run(
             [f'{prism_bin} {self.model_dir}/final_model.pm -pf \'{prop}\' -exportstrat stdout:reach=false'],
             shell=True, capture_output=True, text=True)
-        
+
         # Parse output to obtain strategy
         output = completed_process.stdout
         strategy = {}
-        strategy_string = output.split("Exporting strategy as actions below:\n")[1].split("\n---")[0]
 
-        if strategy_string == [output]:
+        temp = output.split("Exporting strategy as actions below:\n")
+        if temp == [output]:
             print("PRISM did not give expected output. There may be a syntax error in the model, or some parameters did not get written properly.")
             return chosen_config
+
+        strategy_string = temp[1].split("\n---")[0]
+
 
         for line in strategy_string.splitlines():
             (state, action) = line.split('=')
